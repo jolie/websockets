@@ -12,13 +12,13 @@
 	"distJar": "jolie-websockets-0.1.0.jar",
 	"dependencies": {
 		"mvn": {
-			"org.java-websocket:Java-WebSocket": "1.5.1"
+			"org.java-websocket:Java-WebSocket": "1.6.0"
 		},
 		"npm": {}
 	},
 	"mvnPeers": {
 		"org.java-websocket:Java-WebSocket": {
-			"org.slf4j:slf4j-api": "1.7.25"
+			"org.slf4j:slf4j-api": "2.0.17"
 		}
 	}
 }
