@@ -5,7 +5,7 @@
 
 	<groupId>joliex.websockets</groupId>
 	<artifactId>jolie-websockets</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 
 	<name>jolie-websockets</name>
 	<url>https://github.com/jolie/websockets</url>

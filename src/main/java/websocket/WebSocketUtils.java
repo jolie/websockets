@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2021 Fabrizio Montesi <famontesi@gmail.com>
+ * Copyright (C) 2025 Matthias Wallnöfer <mdw@samba.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,13 +22,21 @@ package joliex.websocket;
 
 import jolie.runtime.*;
 import jolie.runtime.embedding.RequestResponse;
+
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.server.WebSocketServer;
 import org.java_websocket.handshake.ServerHandshake;
+import org.java_websocket.handshake.ClientHandshake;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -105,7 +114,89 @@ public class WebSocketUtils extends JavaService {
 		}
 	}
 
+	private class JolieWebSocketServer extends WebSocketServer {
+		private final Embedder embedder;
+		private final Value correlationData;
+
+		public JolieWebSocketServer( String host, int port, Embedder embedder, Value correlationData ) {
+			// TODO: add TLS
+			super( new InetSocketAddress( host.isEmpty() ? "localhost" : host, port ) );
+			this.embedder = embedder;
+			this.correlationData = correlationData;
+		}
+
+		private Value buildNotificationValue() {
+			Value v = Value.create();
+			v.getFirstChild( "corrData" ).deepCopy( correlationData );
+			return v;
+		}
+
+		@Override
+		public void onStart() {
+			try {
+				embedder.callOneWay( "onStart", buildNotificationValue() );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
+		}
+
+		@Override
+		public void onOpen( WebSocket conn, ClientHandshake handshake ) {
+			try {
+				Value v = buildNotificationValue();
+				v.setFirstChild( "id", conn.getRemoteSocketAddress().toString() );
+				embedder.callOneWay( "onOpen", v );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
+		}
+
+		@Override
+		public void onClose( WebSocket conn, int code, String reason, boolean remote ) {
+			try {
+				Value v = buildNotificationValue();
+				v.setFirstChild( "id", conn.getRemoteSocketAddress().toString() );
+				v.setFirstChild( "code", code );
+				v.setFirstChild( "reason", reason );
+				v.setFirstChild( "remote", remote );
+				embedder.callOneWay( "onClose", v );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
+		}
+
+		@Override
+		public void onMessage( WebSocket conn, ByteBuffer message ) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void onMessage( WebSocket conn, String message ) {
+			try {
+				Value v = buildNotificationValue();
+				v.setFirstChild( "id", conn.getRemoteSocketAddress().toString() );
+				v.setFirstChild( "message", message );
+				embedder.callOneWay( "onMessage", v );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
+		}
+
+		@Override
+		public void onError( WebSocket conn, Exception ex ) {
+			try {
+				Value v = buildNotificationValue();
+				v.setFirstChild( "id", conn.getRemoteSocketAddress().toString() );
+				v.setFirstChild( "error", ex.getMessage() );
+				embedder.callOneWay( "onError", v );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
+		}
+	}
+
 	private final Map< String, JolieWebSocketClient > clients = new ConcurrentHashMap<>();
+	private volatile JolieWebSocketServer server;
 
 	@RequestResponse
 	public void connect( Value request )
@@ -130,6 +221,16 @@ public class WebSocketUtils extends JavaService {
 	}
 
 	@RequestResponse
+	public void bind( Value request ) throws FaultException {
+		final JolieWebSocketServer server =
+			new JolieWebSocketServer( request.getFirstChild( "host" ).strValue(),
+				request.getFirstChild( "port" ).intValue(), getEmbedder(), request.getFirstChild( "corrData" ) );
+		server.setDaemon( true );
+		server.start();
+		this.server = server;
+	}
+
+	@RequestResponse
 	public void send( Value request )
 		throws FaultException {
 		JolieWebSocketClient client = clients.get( request.getFirstChild( "id" ).strValue() );
@@ -140,10 +241,49 @@ public class WebSocketUtils extends JavaService {
 		}
 	}
 
+	@RequestResponse
+	public void broadcast( Value request ) throws FaultException {
+		if (server == null) {
+			throw new FaultException( "NotFound" );
+		}
+
+		if ( !request.hasChildren( "ids" )) {
+			server.broadcast( request.getFirstChild( "message" ).strValue() );
+		} else {
+			Collection< WebSocket > allConnections = server.getConnections(),
+				filteredConnections = new ArrayList< WebSocket >();
+			for ( Value id : request.getChildren( "ids" ) ) {
+				boolean found = false;
+				for ( WebSocket conn : allConnections ) {
+					if ( conn.getRemoteSocketAddress().toString().equals( id.strValue() ) ) {
+						filteredConnections.add( conn );
+						found = true;
+					}
+				}
+				if ( !found ) {
+					throw new FaultException( "NotFound" );
+				}
+			}
+
+			server.broadcast( request.getFirstChild( "message" ).strValue(), filteredConnections );
+		}
+	}
+
 	public void close( Value request ) {
 		JolieWebSocketClient client = clients.get( request.getFirstChild( "id" ).strValue() );
 		if( client != null ) {
 			client.close();
+		}
+	}
+
+	@RequestResponse
+	public void stop() {
+		if( server != null ) {
+			try {
+				server.stop();
+			} catch( InterruptedException e ) {
+				interpreter().logWarning( e );
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2021 Fabrizio Montesi <famontesi@gmail.com>
+ * Copyright (C) 2025 Matthias Wallnöfer <mdw@samba.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +28,12 @@ type ConnectRequest {
 	headers?:undefined //< HTTP headers, if any
 }
 
+type BindRequest {
+	host?:string //< the websocket host (per default "localhost")
+	port:int //< the websocket port
+	corrData?:undefined //< correlation data for the notifications received from the utilities, if any
+}
+
 type CloseRequest {
 	id:WID //< The websocket id
 }
@@ -36,15 +43,31 @@ type SendRequest {
 	message:string //< The message
 }
 
+type BroadcastRequest {
+	message:string //< The message to broadcast
+	ids[ 0, * ]:WID //< The ids of the websockets to broadcast to. If not specified, the message is broadcasted to all websockets
+}
+
 interface WebSocketUtilsInterface {
 RequestResponse:
-	/// Opens a websocket connection. Returns the id of the created websocket handler.
+	/// Client: Opens a websocket connection. Returns the id of the created websocket handler.
 	connect( ConnectRequest )( void ) throws URISyntaxException,
-	/// Sends a message over the specified websocket
-	send( SendRequest )( void ) throws NotFound(void)
+	/// Server: Starts a websocket server.
+	bind( BindRequest )( void ),
+	/// Client: Sends a message over the specified websocket
+	send( SendRequest )( void ) throws NotFound(void),
+	/// Server: Broadcasts a message to all/specified websockets
+	broadcast( BroadcastRequest )( void ) throws NotFound(void),
+	/// Server: Stops a running websocket server
+	stop( void )( void )
 OneWay:
-	/// Closes a websocket connection
+	/// Client: Closes a websocket connection
 	close( CloseRequest )
+}
+
+type onStartMesg {
+	id:WID
+	corrData?:undefined
 }
 
 type OnOpenMesg {
@@ -74,6 +97,7 @@ type OnErrorMesg {
 
 interface WebSocketHandlerInterface {
 OneWay:
+	onStart( onStartMesg ),
 	onOpen( OnOpenMesg ),
 	onMessage( OnMessageMesg ),
 	onClose( OnCloseMesg ),
