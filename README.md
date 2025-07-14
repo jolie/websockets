@@ -4,7 +4,7 @@ A websocket client library for [Jolie](https://jolie-lang.org).
 
 ## Installation
 
-`jpm add @jolie/websockets`
+`jpm install @jolie/websockets`
 
 ## Usage
 
