@@ -2,3 +2,5 @@
 dist
 target
 lib
+node_modules
+package-lock.json
