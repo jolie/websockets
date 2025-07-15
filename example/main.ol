@@ -16,7 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
- 
+
+// NOTICE: To run it, the Jolie WebSocket library called "main.ol"
+// needs to be accessible in the parent directory (..) and the Java
+// connector (JAR file) under "lib/"
 from .. import WebSocketUtils, WebSocketHandlerInterface
 from time import Time
 from console import Console

@@ -2,6 +2,10 @@
 
 A websocket client library for [Jolie](https://jolie-lang.org).
 
+## Build
+
+`mvn install`
+
 ## Installation
 
 `jpm install @jolie/websockets`

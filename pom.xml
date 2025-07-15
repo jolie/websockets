@@ -105,6 +105,7 @@
 					<archive>
 					</archive>
 					<outputDirectory>dist</outputDirectory>
+					<outputDirectory>example/lib</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>
