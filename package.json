@@ -1,0 +1,39 @@
+{
+  "name": "@jolie/websockets",
+  "version": "0.2.0",
+  "description": "A websocket client library for Jolie",
+  "keywords": [
+    "jolie",
+    "microservices",
+    "websocket"
+  ],
+  "homepage": "https://github.com/jolie/websockets#readme",
+  "bugs": {
+    "url": "https://github.com/jolie/websockets/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jolie/websockets.git"
+  },
+  "license": "LGPL-2.1-only",
+  "author": {
+    "name": "Fabrizio Montesi",
+    "email": "famontesi@gmail.com",
+    "url": "https://www.fabriziomontesi.com"
+  },
+  "scripts": {
+    "prepack": "npx --package=@jolie/jpm -- jpm hooks:prepack",
+    "preinstall": "npx --package=@jolie/jpm -- jpm hooks:preinstall",
+    "postpublish": "shx rm -rf dist"
+  },
+  "devDependencies": {
+    "shx": "^0.3.4"
+  },
+  "jolie": {
+    "dependencies": {},
+    "maven": {
+      "dependencies": {},
+      "indirectDependencies": {}
+    }
+  }
+}

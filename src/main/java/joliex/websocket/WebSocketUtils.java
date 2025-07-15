@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -193,6 +192,7 @@ public class WebSocketUtils extends JavaService {
 				interpreter().logWarning( e );
 			}
 		}
+
 	}
 
 	private final Map< String, JolieWebSocketClient > clients = new ConcurrentHashMap<>();
