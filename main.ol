@@ -66,7 +66,6 @@ OneWay:
 }
 
 type onStartMesg {
-	id:WID
 	corrData?:undefined
 }
 
