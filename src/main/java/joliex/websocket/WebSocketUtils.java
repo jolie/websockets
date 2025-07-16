@@ -236,6 +236,9 @@ public class WebSocketUtils extends JavaService {
 		JolieWebSocketClient client = clients.get( request.getFirstChild( "id" ).strValue() );
 		if( client != null ) {
 			client.send( request.getFirstChild( "message" ).strValue() );
+		} else if ( server != null ) {
+			request.setFirstChild( "ids", request.getFirstChild( "id" ).strValue() );
+			broadcast( request );
 		} else {
 			throw new FaultException( "NotFound" );
 		}
@@ -243,7 +246,7 @@ public class WebSocketUtils extends JavaService {
 
 	@RequestResponse
 	public void broadcast( Value request ) throws FaultException {
-		if (server == null) {
+		if ( server == null ) {
 			throw new FaultException( "NotFound" );
 		}
 

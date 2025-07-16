@@ -54,7 +54,8 @@ service Main {
 
 		[ onMessage( m ) ] {
 			println@console( "Message received, sending back message: " + m.message )()
-			broadcast@wsutils( { ids = m.id, message = m.message } )()
+			send@wsutils( { id = m.id, message = m.message } )()
+//			broadcast@wsutils( { ids[0] = m.id, message = m.message } )()
 			println@console( "done!" )()
 		}
 
