@@ -24,6 +24,7 @@ type WID:string
 type ConnectRequest {
 	id:WID //< the id that should be assigned to the websocket
 	uri:string //< the websocket URI to connect to
+	ssl?:undefined //< consider the Jolie docs' section "Security with SSL"
 	corrData?:undefined //< correlation data for the notifications received from the utilities, if any
 	headers?:undefined //< HTTP headers, if any
 }
@@ -31,6 +32,7 @@ type ConnectRequest {
 type BindRequest {
 	host?:string //< the websocket host (per default "localhost")
 	port:int //< the websocket port
+	ssl?:undefined //< consider the Jolie docs' section "Security with SSL"
 	corrData?:undefined //< correlation data for the notifications received from the utilities, if any
 }
 
@@ -51,9 +53,9 @@ type BroadcastRequest {
 interface WebSocketUtilsInterface {
 RequestResponse:
 	/// Client: Opens a websocket connection. Returns the id of the created websocket handler.
-	connect( ConnectRequest )( void ) throws URISyntaxException,
+	connect( ConnectRequest )( void ) throws URISyntaxException SSLError(string),
 	/// Server: Starts a websocket server.
-	bind( BindRequest )( void ),
+	bind( BindRequest )( void ) throws SSLError(string),
 	/// Client: Sends a message over the specified websocket
 	send( SendRequest )( void ) throws NotFound(void),
 	/// Server: Broadcasts a message to all/specified websockets
