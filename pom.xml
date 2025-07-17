@@ -34,11 +34,13 @@
 			<groupId>org.jolie-lang</groupId>
 			<artifactId>jolie</artifactId>
 			<version>1.10.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jolie-lang</groupId>
 			<artifactId>libjolie</artifactId>
 			<version>1.10.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.java-websocket</groupId>
@@ -105,7 +107,6 @@
 					<archive>
 					</archive>
 					<outputDirectory>dist</outputDirectory>
-					<outputDirectory>example/lib</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>
