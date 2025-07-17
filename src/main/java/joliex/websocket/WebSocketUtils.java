@@ -265,7 +265,9 @@ public class WebSocketUtils extends JavaService {
 			}
 		}
 
-		server.setDaemon( true );
+		interpreter().cleaner().register(server, () -> {
+			stop();
+		});
 		server.start();
 		this.server = server;
 	}
@@ -327,6 +329,7 @@ public class WebSocketUtils extends JavaService {
 			} catch( InterruptedException e ) {
 				interpreter().logWarning( e );
 			}
+			server = null;
 		}
 	}
 

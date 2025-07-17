@@ -33,13 +33,13 @@
 		<dependency>
 			<groupId>org.jolie-lang</groupId>
 			<artifactId>jolie</artifactId>
-			<version>1.10.4</version>
+			<version>1.11.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jolie-lang</groupId>
 			<artifactId>libjolie</artifactId>
-			<version>1.10.4</version>
+			<version>1.11.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
