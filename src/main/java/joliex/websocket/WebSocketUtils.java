@@ -200,7 +200,9 @@ public class WebSocketUtils extends JavaService {
 		public void onError( WebSocket conn, Exception ex ) {
 			try {
 				Value v = buildNotificationValue();
-				v.setFirstChild( "id", conn.getRemoteSocketAddress().toString() );
+				v.setFirstChild( "id",
+					conn != null ? conn.getRemoteSocketAddress().toString()
+					: getAddress().toString() );
 				v.setFirstChild( "error", ex.getMessage() );
 				embedder.callOneWay( "onError", v );
 			} catch( IOException e ) {

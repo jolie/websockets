@@ -59,8 +59,8 @@ service Main {
 			println@console( "done!" )()
 		}
 
-		[ onError() ] {
-			println@console( "Connection (socket) error" )()
+		[ onError( m ) ] {
+			println@console( "Connection (socket) error: " + m.error )()
 		}
 	}
 }
