@@ -25,6 +25,7 @@ type ConnectRequest {
 	id:WID //< the id that should be assigned to the websocket
 	uri:string //< the websocket URI to connect to
 	ssl?:undefined //< consider the Jolie docs' section "Security with SSL"
+	tcpNoDelay?:bool //< whether to disable the Nagle algorithm (default: false)
 	corrData?:undefined //< correlation data for the notifications received from the utilities, if any
 	headers?:undefined //< HTTP headers, if any
 }
@@ -33,6 +34,7 @@ type BindRequest {
 	host?:string //< the websocket host (per default "localhost")
 	port:int //< the websocket port
 	ssl?:undefined //< consider the Jolie docs' section "Security with SSL"
+	tcpNoDelay?:bool //< whether to disable the Nagle algorithm (default: false)
 	corrData?:undefined //< correlation data for the notifications received from the utilities, if any
 }
 

@@ -242,6 +242,8 @@ public class WebSocketUtils extends JavaService {
 				}
 			}
 
+			client.setTcpNoDelay(
+				request.getFirstChild( "tcpNoDelay" ).boolValue() );
 			client.connect();
 		} catch( URISyntaxException e ) {
 			throw new FaultException( "URISyntaxException", e );
@@ -265,6 +267,9 @@ public class WebSocketUtils extends JavaService {
 			}
 		}
 
+		server.setReuseAddr( true );
+		server.setTcpNoDelay(
+			request.getFirstChild( "tcpNoDelay" ).boolValue() );
 		interpreter().cleaner().register(server, () -> {
 			stop();
 		});

@@ -40,6 +40,7 @@ service Main {
 		wid = new
 		print@console( "Connecting to the local server... " )()
 		connect@wsutils( { id = wid, uri = "wss://localhost:8081",
+				tcpNoDelay = true,
 				ssl.trustStore = "private/truststore.jks", ssl.trustStorePassword = KeystorePassword } )()
 		println@console( "done!" )()
 		[ onOpen() ] {

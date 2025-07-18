@@ -41,6 +41,7 @@ service Main {
 	init {
 		print@console( "Binding to localhost:8081..." )()
 		bind@wsutils( { host = "localhost", port = 8081,
+				tcpNoDelay = true,
 				ssl.keyStore = "private/keystore.jks", ssl.keyStorePassword = KeystorePassword } )()
 		println@console( "done!" )()
 	}
