@@ -270,9 +270,7 @@ public class WebSocketUtils extends JavaService {
 		server.setReuseAddr( true );
 		server.setTcpNoDelay(
 			request.getFirstChild( "tcpNoDelay" ).boolValue() );
-		interpreter().cleaner().register(server, () -> {
-			stop();
-		});
+		interpreter().cleaner().register(server, this::stop);
 		server.start();
 		this.server = server;
 	}
