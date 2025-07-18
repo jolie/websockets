@@ -23,6 +23,7 @@
 from .. import WebSocketUtils, WebSocketHandlerInterface
 from time import Time
 from console import Console
+from string-utils import StringUtils
 
 service Main {
 	inputPort Input {
@@ -33,6 +34,7 @@ service Main {
 	embed WebSocketUtils as wsutils
 	embed Time as time
 	embed Console as console
+	embed StringUtils as stringUtils
 
 	execution: sequential
 
@@ -60,7 +62,11 @@ service Main {
 		}
 
 		[ onError( m ) ] {
-			println@console( "Connection (socket) error: " + m.error )()
+			if ( endsWith@stringUtils( m.id { suffix = "8080" } ) ) {
+				println@console( "Server error: " + m.error )()
+			} else {
+				println@console( "Client error: " + m.error )()
+			}
 		}
 	}
 }
