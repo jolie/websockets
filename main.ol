@@ -44,11 +44,11 @@ type CloseRequest {
 
 type SendRequest {
 	id:WID //< The websocket id
-	message:string //< The message
+	message:string|raw //< The message
 }
 
 type BroadcastRequest {
-	message:string //< The message to broadcast
+	message:string|raw //< The message to broadcast
 	ids[ 0, * ]:WID //< The ids of the websockets to broadcast to. If not specified, the message is broadcasted to all websockets
 }
 
@@ -89,7 +89,7 @@ type OnCloseMesg {
 type OnMessageMesg {
 	id:WID
 	corrData?:undefined
-	message:string
+	message:string|raw
 }
 
 type OnErrorMesg {

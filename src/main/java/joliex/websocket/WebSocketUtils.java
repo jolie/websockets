@@ -103,7 +103,13 @@ public class WebSocketUtils extends JavaService {
 
 		@Override
 		public void onMessage( ByteBuffer message ) {
-			throw new UnsupportedOperationException();
+			try {
+				Value v = buildNotificationValue();
+				v.setFirstChild( "message", new ByteArray( message.array() ) );
+				embedder.callOneWay( "onMessage", v );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
 		}
 
 		@Override
@@ -181,7 +187,14 @@ public class WebSocketUtils extends JavaService {
 
 		@Override
 		public void onMessage( WebSocket conn, ByteBuffer message ) {
-			throw new UnsupportedOperationException();
+			try {
+				Value v = buildNotificationValue();
+				v.setFirstChild( "id", conn.getRemoteSocketAddress().toString() );
+				v.setFirstChild( "message", new ByteArray( message.array() ) );
+				embedder.callOneWay( "onMessage", v );
+			} catch( IOException e ) {
+				interpreter().logWarning( e );
+			}
 		}
 
 		@Override
@@ -280,7 +293,12 @@ public class WebSocketUtils extends JavaService {
 		throws FaultException {
 		JolieWebSocketClient client = clients.get( request.getFirstChild( "id" ).strValue() );
 		if( client != null ) {
-			client.send( request.getFirstChild( "message" ).strValue() );
+			final Value message = request.getFirstChild( "message" );
+			if ( message.isString() ) {
+				client.send( message.strValue() );
+			} else {
+				client.send( message.byteArrayValue().getBytes() );
+			}
 		} else if ( server != null ) {
 			request.setFirstChild( "ids", request.getFirstChild( "id" ).strValue() );
 			broadcast( request );
@@ -295,11 +313,13 @@ public class WebSocketUtils extends JavaService {
 			throw new FaultException( "NotFound" );
 		}
 
+		final Collection< WebSocket > allConnections = server.getConnections(),
+			filteredConnections;
 		if ( !request.hasChildren( "ids" )) {
-			server.broadcast( request.getFirstChild( "message" ).strValue() );
+			filteredConnections = allConnections;
 		} else {
-			Collection< WebSocket > allConnections = server.getConnections(),
-				filteredConnections = new ArrayList< WebSocket >();
+			filteredConnections = new ArrayList< WebSocket >();
+
 			for ( Value id : request.getChildren( "ids" ) ) {
 				boolean found = false;
 				for ( WebSocket conn : allConnections ) {
@@ -312,8 +332,13 @@ public class WebSocketUtils extends JavaService {
 					throw new FaultException( "NotFound" );
 				}
 			}
+		}
 
-			server.broadcast( request.getFirstChild( "message" ).strValue(), filteredConnections );
+		final Value message = request.getFirstChild( "message" );
+		if ( message.isString() ) {
+			server.broadcast( message.strValue(), filteredConnections );
+		} else {
+			server.broadcast( message.byteArrayValue().getBytes(), filteredConnections );
 		}
 	}
 
