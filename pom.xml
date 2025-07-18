@@ -118,6 +118,30 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<workingDirectory>example</workingDirectory>
+					<executable>jolie</executable>
+					<arguments>
+						<argument>--stackTraces</argument>
+						<argument>--charset</argument>
+						<argument>${project.build.sourceEncoding}</argument>
+						<argument>test.ol</argument>
+					</arguments>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

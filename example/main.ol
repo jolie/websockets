@@ -21,7 +21,6 @@
 // needs to be accessible in the parent directory (..) and the Java
 // connector (JAR file) under "lib/"
 from .. import WebSocketUtils, WebSocketHandlerInterface
-from time import Time
 from console import Console
 
 service Main {
@@ -31,7 +30,6 @@ service Main {
 	}
 
 	embed WebSocketUtils as wsutils
-	embed Time as time
 	embed Console as console
 
 	main {

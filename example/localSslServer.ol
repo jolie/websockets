@@ -21,20 +21,18 @@
 // needs to be accessible in the parent directory (..) and the Java
 // connector (JAR file) under "lib/"
 from .. import WebSocketUtils, WebSocketHandlerInterface
-from time import Time
 from console import Console
 from string-utils import StringUtils
 
 include "private/ssl.iol"
 
-service Main {
+service LocalSslServer {
 	inputPort Input {
 		location: "local"
 		interfaces: WebSocketHandlerInterface
 	}
 
 	embed WebSocketUtils as wsutils
-	embed Time as time
 	embed Console as console
 	embed StringUtils as stringUtils
 
