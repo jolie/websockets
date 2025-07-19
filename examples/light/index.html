@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+ <html lang="en">
+   <head>
+    <title>Jolie WebSocket-Light</title>
+    <meta charset="UTF-8">
+    <style>
+      body {
+        margin: 20px;
+      }
+    </style>
+    <script src="endpoint.js"></script>
+    <script>
+      "use strict";
+
+      const socket = new WebSocket("ws://" + WEBSOCKET_HOST + ':' + WEBSOCKET_PORT + "/")
+      socket.onopen = (event) => {
+        console.log('WebSocket connection established')
+        socket.send(JSON.stringify({ type: 'getLight' }))
+      }
+      socket.onerror = (error) => {
+        console.error('WebSocket error:', error)
+      }
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        if (data.type === 'setLight') {
+          document.querySelector('#light').src =
+            (['light-off.png', 'light-on.png'])[Number(data.payload)]
+        }
+      }
+      socket.onclose = (event) => {
+        console.log('WebSocket connection closed')
+      }
+    </script>
+  </head>
+  <body>
+    <img id="light" src="light-off.png" alt="Light bulb" title="Please click" onClick="socket.send(JSON.stringify({ type: 'toggleLight' }))">
+  </body>
+</html>
