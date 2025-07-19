@@ -132,7 +132,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<workingDirectory>example</workingDirectory>
+					<workingDirectory>examples</workingDirectory>
 					<executable>jolie</executable>
 					<arguments>
 						<argument>--stackTraces</argument>

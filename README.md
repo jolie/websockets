@@ -12,4 +12,4 @@ A websocket client library for [Jolie](https://jolie-lang.org).
 
 ## Usage
 
-See the example in <https://github.com/jolie/websockets/blob/main/example/main.ol>.
+Consider the examples in the subdir "examples", e.g. <https://github.com/jolie/websockets/blob/main/examples/main.ol>.
