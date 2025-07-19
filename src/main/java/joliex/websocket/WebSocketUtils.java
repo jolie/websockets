@@ -313,19 +313,22 @@ public class WebSocketUtils extends JavaService {
 			throw new FaultException( "NotFound" );
 		}
 
-		final Collection< WebSocket > allConnections = server.getConnections(),
-			filteredConnections;
+		final Collection< WebSocket > recvConnections;
 		if ( !request.hasChildren( "ids" )) {
-			filteredConnections = allConnections;
+			recvConnections = server.getConnections(); // all connections
 		} else {
-			filteredConnections = new ArrayList< WebSocket >();
+			recvConnections = new ArrayList< WebSocket >();
+			final Collection< WebSocket > openConnections =
+				new ArrayList<>( server.getConnections() );
 
 			for ( Value id : request.getChildren( "ids" ) ) {
 				boolean found = false;
-				for ( WebSocket conn : allConnections ) {
+				for ( WebSocket conn : openConnections ) {
 					if ( conn.getRemoteSocketAddress().toString().equals( id.strValue() ) ) {
-						filteredConnections.add( conn );
+						recvConnections.add( conn );
+						openConnections.remove( conn );
 						found = true;
+						break;
 					}
 				}
 				if ( !found ) {
@@ -336,9 +339,9 @@ public class WebSocketUtils extends JavaService {
 
 		final Value message = request.getFirstChild( "message" );
 		if ( message.isString() ) {
-			server.broadcast( message.strValue(), filteredConnections );
+			server.broadcast( message.strValue(), recvConnections );
 		} else {
-			server.broadcast( message.byteArrayValue().getBytes(), filteredConnections );
+			server.broadcast( message.byteArrayValue().getBytes(), recvConnections );
 		}
 	}
 
