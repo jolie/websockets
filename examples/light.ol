@@ -107,7 +107,7 @@ const WEBSOCKET_PORT = " + WEBSOCKET_PORT + "
 		}
 
 		[ onError( m ) ] {
-			if ( endsWith@stringUtils( m.id { suffix = "8080" } ) ) {
+			if ( endsWith@stringUtils( m.id { suffix = WEBSOCKET_PORT } ) ) {
 				println@console( "Server error: " + m.error )()
 			} else {
 				println@console( "Client error: " + m.error )()
