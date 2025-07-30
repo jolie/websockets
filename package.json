@@ -23,11 +23,10 @@
   },
   "scripts": {
     "prepack": "npx --package=@jolie/jpm -- jpm hooks:prepack",
-    "preinstall": "npx --package=@jolie/jpm -- jpm hooks:preinstall",
     "postpublish": "shx rm -rf dist"
   },
   "devDependencies": {
-    "shx": "^0.3.4"
+    "shx": "^0.4.0"
   },
   "jolie": {
     "dependencies": {},
